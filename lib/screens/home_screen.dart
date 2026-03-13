@@ -61,9 +61,17 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Hi, Kirana', style: TS.h(20)),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text('Hi, Kirana', style: TS.h(20)),
+              ),
               const SizedBox(height: 2),
-              Text('Tetap jaga keamananmu ya!', style: TS.r(13)),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Text('Tetap jaga keamananmu ya!', style: TS.r(13)),
+              ),
             ],
           ),
         ),
@@ -101,104 +109,110 @@ class HomeScreen extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: DCard(
-            padding: const EdgeInsets.all(16),
-            borderColor: C.safe.withOpacity(0.3),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: C.safe.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(
-                        Icons.shield_rounded,
-                        color: C.safe,
-                        size: 20,
-                      ),
+          child: _buildMetricCard(
+            icon: Icons.shield_rounded,
+            color: C.safe,
+            label: 'Relatif Aman',
+            sublabel: 'Status area\nlokasimu saat ini',
+            showLive: true,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildMetricCard(
+            icon: Icons.local_fire_department_rounded,
+            color: C.pink,
+            label: '7 hari',
+            sublabel: 'Streak amanmu!',
+            showStreak: true,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMetricCard({
+    required IconData icon,
+    required Color color,
+    required String label,
+    required String sublabel,
+    bool showLive = false,
+    bool showStreak = false,
+  }) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        double horizontalPadding = constraints.maxWidth < 200 ? 8 : 16;
+        double iconSize = constraints.maxWidth < 200 ? 16 : 20;
+        double containerSize = constraints.maxWidth < 200 ? 30 : 36;
+        double fontSize = constraints.maxWidth < 200 ? 13 : 15;
+        double subFontSize = constraints.maxWidth < 200 ? 9 : 10;
+
+        return DCard(
+          padding: EdgeInsets.all(horizontalPadding),
+          borderColor: color.withOpacity(0.3),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: containerSize,
+                    height: containerSize,
+                    decoration: BoxDecoration(
+                      color: color.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    const Spacer(),
+                    child: Icon(icon, color: color, size: iconSize),
+                  ),
+                  const Spacer(),
+                  if (showLive)
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 7,
                         vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color: C.safe.withOpacity(0.12),
+                        color: color.withOpacity(0.12),
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
                         'LIVE',
                         style: GoogleFonts.inter(
                           fontSize: 9,
-                          color: C.safe,
+                          color: color,
                           fontWeight: FontWeight.w800,
                           letterSpacing: 1.5,
                         ),
                       ),
                     ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-                Text('Relatif Aman', style: TS.h(15, c: C.safe)),
-                const SizedBox(height: 3),
-                Text('Status area\nlokasimu saat ini', style: TS.r(10, h: 1.4)),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: DCard(
-            padding: const EdgeInsets.all(16),
-            borderColor: C.pink.withOpacity(0.3),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: C.pinkSoft,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: const Icon(
-                        Icons.local_fire_department_rounded,
-                        color: C.pink,
-                        size: 20,
-                      ),
-                    ),
-                    const Spacer(),
-                    Text('', style: TS.h(18)),
-                  ],
-                ),
-                const SizedBox(height: 12),
+                  if (showStreak) Text('', style: TS.h(18)),
+                ],
+              ),
+              const SizedBox(height: 12),
+              if (showStreak)
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text('7', style: TS.h(26, c: C.pink)),
+                    Text('7', style: TS.h(fontSize + 11, c: color)),
                     const SizedBox(width: 4),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 3),
-                      child: Text('hari', style: TS.r(11, c: C.pink)),
+                      child: Text(
+                        'hari',
+                        style: TS.r(subFontSize + 1, c: color),
+                      ),
                     ),
                   ],
-                ),
-                Text('Streak amanmu!', style: TS.r(10)),
-              ],
-            ),
+                )
+              else
+                Text(label, style: TS.h(fontSize, c: color)),
+              const SizedBox(height: 3),
+              Text(sublabel, style: TS.r(subFontSize, h: 1.4)),
+            ],
           ),
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -252,35 +266,76 @@ class HomeScreen extends StatelessWidget {
 
   Widget _serviceGrid() {
     final services = [
-      _Svc(Icons.map_rounded, 'Peta Aman', 'Lihat area rawan', C.info, 1),
-      _Svc(Icons.sos_rounded, 'Panic Button', 'Kirim sinyal SOS', C.pink, 2),
+      _Svc(Icons.map_rounded, 'Peta Aman', 'Lihat area rawan', C.pink, 1),
+      _Svc(Icons.sos_rounded, 'Panic Button', 'Kirim sinyal SOS', C.warning, 2),
+      _Svc(Icons.chat_rounded, 'Chat', 'Kirim Pesan', C.info, 4),
       _Svc(
-        Icons.assignment_rounded,
-        'Laporan',
-        'Laporkan kejadian',
-        C.warning,
-        3,
+        Icons.verified_user_rounded,
+        'Verifikasi',
+        'Verifikasi data',
+        C.safe,
+        4,
       ),
+      _Svc(Icons.assignment_rounded, 'Laporan', 'Laporkan kejadian', C.pink, 3),
       _Svc(
         Icons.lightbulb_rounded,
         'Tips Aman',
         'Cara lindungi diri',
-        C.safe,
+        C.info,
         0,
       ),
     ];
 
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-        childAspectRatio: 1.55,
-      ),
-      itemCount: services.length,
-      itemBuilder: (ctx, i) => _ServiceTile(svc: services[i]),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        int crossAxisCount;
+        double childAspectRatio;
+        double fontSize;
+        double iconSize;
+
+        if (constraints.maxWidth < 400) {
+          // Smartphone kecil
+          crossAxisCount = 2;
+          childAspectRatio = 1.5;
+          fontSize = 11;
+          iconSize = 18;
+        } else if (constraints.maxWidth < 600) {
+          // Smartphone normal
+          crossAxisCount = 2;
+          childAspectRatio = 1.6;
+          fontSize = 12;
+          iconSize = 20;
+        } else if (constraints.maxWidth < 900) {
+          // Tablet kecil
+          crossAxisCount = 3;
+          childAspectRatio = 1.6;
+          fontSize = 13;
+          iconSize = 22;
+        } else {
+          // Tablet besar
+          crossAxisCount = 4;
+          childAspectRatio = 1.7;
+          fontSize = 14;
+          iconSize = 24;
+        }
+
+        return GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
+            crossAxisSpacing: 12,
+            mainAxisSpacing: 12,
+            childAspectRatio: childAspectRatio,
+          ),
+          itemCount: services.length,
+          itemBuilder: (ctx, i) => _ServiceTile(
+            svc: services[i],
+            fontSize: fontSize,
+            iconSize: iconSize,
+          ),
+        );
+      },
     );
   }
 
@@ -346,7 +401,15 @@ class _TopBtn extends StatelessWidget {
 
 class _ServiceTile extends StatelessWidget {
   final _Svc svc;
-  const _ServiceTile({super.key, required this.svc});
+  final double fontSize;
+  final double iconSize;
+
+  const _ServiceTile({
+    super.key,
+    required this.svc,
+    required this.fontSize,
+    required this.iconSize,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -364,20 +427,20 @@ class _ServiceTile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Container(
-              width: 42,
-              height: 42,
+              width: iconSize + 20,
+              height: iconSize + 20,
               decoration: BoxDecoration(
                 color: svc.color.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: svc.color.withOpacity(0.2)),
               ),
-              child: Icon(svc.icon, color: svc.color, size: 22),
+              child: Icon(svc.icon, color: svc.color, size: iconSize),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(svc.label, style: TS.b(13)),
-                Text(svc.sub, style: TS.r(10)),
+                Text(svc.label, style: TS.b(fontSize)),
+                Text(svc.sub, style: TS.r(fontSize - 2)),
               ],
             ),
           ],
@@ -393,44 +456,95 @@ class _IncTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      padding: const EdgeInsets.all(13),
-      decoration: BoxDecoration(
-        color: C.surface2,
-        borderRadius: BorderRadius.circular(13),
-        border: Border.all(color: C.border),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 3,
-            height: 42,
-            decoration: BoxDecoration(
-              color: inc.color,
-              borderRadius: BorderRadius.circular(2),
-            ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        bool isSmallScreen = constraints.maxWidth < 400;
+
+        return Container(
+          margin: const EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.all(13),
+          decoration: BoxDecoration(
+            color: C.surface2,
+            borderRadius: BorderRadius.circular(13),
+            border: Border.all(color: C.border),
           ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(inc.title, style: TS.b(13)),
-                const SizedBox(height: 3),
-                Text(inc.loc, style: TS.r(11)),
-              ],
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          child: Row(
             children: [
-              StatusBadge(label: inc.level, color: inc.color),
-              const SizedBox(height: 5),
-              Text(inc.time, style: TS.r(10)),
+              Container(
+                width: 3,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: inc.color,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      inc.title,
+                      style: TS.b(isSmallScreen ? 12 : 13),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 3),
+                    Text(
+                      inc.loc,
+                      style: TS.r(isSmallScreen ? 10 : 11),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  StatusBadge(
+                    label: inc.level,
+                    color: inc.color,
+                    fontSize: isSmallScreen ? 10 : 11,
+                  ),
+                  const SizedBox(height: 5),
+                  Text(inc.time, style: TS.r(isSmallScreen ? 9 : 10)),
+                ],
+              ),
             ],
           ),
-        ],
+        );
+      },
+    );
+  }
+}
+
+class StatusBadge extends StatelessWidget {
+  final String label;
+  final Color color;
+  final double fontSize;
+
+  const StatusBadge({
+    super.key,
+    required this.label,
+    required this.color,
+    this.fontSize = 11,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.inter(
+          fontSize: fontSize,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
       ),
     );
   }
