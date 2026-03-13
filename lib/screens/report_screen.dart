@@ -47,7 +47,7 @@ class _ReportScreenState extends State<ReportScreen>
 
   Widget _buildHeader() {
     return Container(
-      color: C.white,
+      color: C.bg
       padding: const EdgeInsets.fromLTRB(20, 52, 20, 16),
       child: Row(
         children: [
@@ -81,7 +81,7 @@ class _ReportScreenState extends State<ReportScreen>
 
   Widget _buildTabs() {
     return Container(
-      color: C.white,
+      color: C.bg
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       child: Container(
         decoration: BoxDecoration(
@@ -261,7 +261,7 @@ class _FormTabState extends State<_FormTab> {
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 160),
             decoration: BoxDecoration(
-              color: sel ? c.color.withOpacity(0.12) : C.white,
+              color: sel ? c.color.withOpacity(0.12) : C.card,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: sel ? c.color.withOpacity(0.5) : C.border,
@@ -288,7 +288,7 @@ class _FormTabState extends State<_FormTab> {
   Widget _buildLocField() {
     return Container(
       decoration: BoxDecoration(
-        color: C.white,
+        color: C.card,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: C.border),
       ),
@@ -340,7 +340,7 @@ class _FormTabState extends State<_FormTab> {
   Widget _buildDescField() {
     return Container(
       decoration: BoxDecoration(
-        color: C.white,
+        color: C.bg,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(color: C.border),
       ),
