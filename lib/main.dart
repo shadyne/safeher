@@ -1,43 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
-
 import 'screens/home_screen.dart';
 import 'screens/map_screen.dart';
-import 'screens/panic_button_screen.dart';
+import 'screens/panic_screen.dart';
 import 'screens/report_screen.dart';
+
+class C {
+  static const bg        = Color(0xFF0D0D14); 
+  static const surface   = Color(0xFF14141E); 
+  static const surface2  = Color(0xFF1A1A28);
+  static const surface3  = Color(0xFF222236);
+
+  static const pink      = Color(0xFFE91E8C);
+  static const pinkLight = Color(0xFFFF4DB8); 
+  static const pinkDark  = Color(0xFFB0156A); 
+  static const pinkGlow  = Color(0x55E91E8C); 
+  static const pinkSoft  = Color(0x1AE91E8C); 
+
+  static const danger    = Color(0xFFE91E8C); 
+  static const safe      = Color(0xFF00E676);
+  static const warning   = Color(0xFFFFAB00); 
+  static const info      = Color(0xFF448AFF); 
+
+  static const textPri   = Color(0xFFF2F2FF); 
+  static const textSec   = Color(0xFFAAAAAF); 
+  static const textMuted = Color(0xFF555570); 
+  static const border    = Color(0xFF252540); 
+}
+
+class TS {
+  static TextStyle h(double sz, {Color? c, double? ls}) =>
+    GoogleFonts.inter(fontSize: sz, fontWeight: FontWeight.w700,
+      color: c ?? C.textPri, letterSpacing: ls);
+  static TextStyle b(double sz, {Color? c}) =>
+    GoogleFonts.inter(fontSize: sz, fontWeight: FontWeight.w600,
+      color: c ?? C.textPri);
+  static TextStyle r(double sz, {Color? c, double? h}) =>
+    GoogleFonts.inter(fontSize: sz, fontWeight: FontWeight.w400,
+      color: c ?? C.textSec, height: h);
+}
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,
   ));
-
   runApp(const SafeHerApp());
-}
-
-class C {
-  // BACKGROUND
-  static const bg = Color(0xFF0E0E12);
-
-  // CARD
-  static const card = Color(0xFF1A1A22);
-
-  // PRIMARY COLORS
-  static const primary = Color(0xFFFF2D8F);
-  static const secondary = Color(0xFF9B4DFF);
-
-  // SOS
-  static const rose = Color(0xFFFF2D8F);
-
-  // TEXT
-  static const white = Color(0xFFFFFFFF);
-  static const textGrey = Color(0xFF9E9EAA);
-
-  // BORDER
-  static const border = Color(0xFF2A2A35);
 }
 
 class SafeHerApp extends StatelessWidget {
@@ -52,175 +62,101 @@ class SafeHerApp extends StatelessWidget {
         useMaterial3: true,
         brightness: Brightness.dark,
         scaffoldBackgroundColor: C.bg,
-
-        colorScheme: const ColorScheme.dark(
-          primary: C.primary,
-        ),
-
-        textTheme: GoogleFonts.plusJakartaSansTextTheme(
-          ThemeData.dark().textTheme,
-        ),
-
-        appBarTheme: AppBarTheme(
-          backgroundColor: C.bg,
-          elevation: 0,
-          centerTitle: true,
-          titleTextStyle: GoogleFonts.plusJakartaSans(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-            color: C.white,
-          ),
-        ),
+        colorScheme: const ColorScheme.dark(primary: C.pink),
+        textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
       ),
       home: const AppShell(),
     );
   }
 }
 
+
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
-
   @override
-  State<AppShell> createState() => _AppShellState();
+  State<AppShell> createState() => AppShellState();
 }
 
-class _AppShellState extends State<AppShell> {
-  int _idx = 0;
+class AppShellState extends State<AppShell> {
+  int idx = 0;
 
-  final _screens = const [
-    HomeScreen(),
-    MapScreen(),
-    PanicScreen(),
-    ReportScreen(),
-  ];
+  void goTo(int i) => setState(() => idx = i);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: C.bg,
       body: IndexedStack(
-        index: _idx,
-        children: _screens,
+        index: idx,
+        children: const [HomeScreen(), MapScreen(), PanicScreen(), ReportScreen()],
       ),
-      bottomNavigationBar: _BottomNav(
-        current: _idx,
-        onTap: (i) => setState(() => _idx = i),
-      ),
+      bottomNavigationBar: _BottomBar(idx: idx, onTap: goTo),
     );
   }
 }
 
-class _BottomNav extends StatelessWidget {
-  final int current;
+class _BottomBar extends StatelessWidget {
+  final int idx;
   final ValueChanged<int> onTap;
-
-  const _BottomNav({
-    required this.current,
-    required this.onTap,
-  });
+  const _BottomBar({required this.idx, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: C.bg,
-        border: Border(
-          top: BorderSide(color: C.border),
-        ),
+      decoration: BoxDecoration(
+        color: C.surface,
+        border: Border(top: BorderSide(color: C.border)),
+        boxShadow: [BoxShadow(
+          color: Colors.black.withOpacity(0.5),
+          blurRadius: 20, offset: const Offset(0, -4))],
       ),
       child: SafeArea(
         top: false,
         child: SizedBox(
-          height: 65,
-          child: Row(
-            children: [
-              _Item(
-                icon: Icons.home_rounded,
-                label: 'Home',
-                idx: 0,
-                current: current,
-                onTap: onTap,
-              ),
-              _Item(
-                icon: Icons.map_rounded,
-                label: 'Peta',
-                idx: 1,
-                current: current,
-                onTap: onTap,
-              ),
-              _SOSItem(
-                active: current == 2,
-                onTap: () => onTap(2),
-              ),
-              _Item(
-                icon: Icons.edit_note_rounded,
-                label: 'Laporan',
-                idx: 3,
-                current: current,
-                onTap: onTap,
-              ),
-            ],
-          ),
+          height: 58,
+          child: Row(children: [
+            _NavItem(icon: Icons.home_rounded,          label: 'Home',    i: 0, idx: idx, onTap: onTap),
+            _NavItem(icon: Icons.map_rounded,            label: 'Peta',    i: 1, idx: idx, onTap: onTap),
+            _SosItem(active: idx == 2,                   onTap: () => onTap(2)),
+            _NavItem(icon: Icons.assignment_rounded,     label: 'Laporan', i: 3, idx: idx, onTap: onTap),
+            _NavItem(icon: Icons.person_rounded,         label: 'Profil',  i: 4, idx: idx, onTap: (_) {}),
+          ]),
         ),
       ),
     );
   }
 }
 
-class _Item extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final int idx;
-  final int current;
-  final ValueChanged<int> onTap;
-
-  const _Item({
-    required this.icon,
-    required this.label,
-    required this.idx,
-    required this.current,
-    required this.onTap,
-  });
+class _NavItem extends StatelessWidget {
+  final IconData icon; final String label;
+  final int i, idx; final ValueChanged<int> onTap;
+  const _NavItem({required this.icon, required this.label,
+    required this.i, required this.idx, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final active = idx == current;
-
+    final on = i == idx;
     return Expanded(
       child: GestureDetector(
-        onTap: () => onTap(idx),
+        onTap: () => onTap(i),
         behavior: HitTestBehavior.opaque,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 24,
-              color: active ? C.primary : C.textGrey,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 10,
-                fontWeight: active ? FontWeight.w700 : FontWeight.w400,
-                color: active ? C.primary : C.textGrey,
-              ),
-            )
-          ],
-        ),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Icon(icon, size: 22, color: on ? C.pink : C.textMuted),
+          const SizedBox(height: 3),
+          Text(label, style: GoogleFonts.inter(fontSize: 9,
+            fontWeight: on ? FontWeight.w700 : FontWeight.w400,
+            color: on ? C.pink : C.textMuted)),
+        ]),
       ),
     );
   }
 }
 
-class _SOSItem extends StatelessWidget {
-  final bool active;
-  final VoidCallback onTap;
-
-  const _SOSItem({
-    required this.active,
-    required this.onTap,
-  });
+class _SosItem extends StatelessWidget {
+  final bool active; final VoidCallback onTap;
+  const _SosItem({required this.active, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -228,45 +164,107 @@ class _SOSItem extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         behavior: HitTestBehavior.opaque,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [
-                    Color(0xFFFF2D8F),
-                    Color(0xFF9B4DFF),
-                  ],
-                ),
-                boxShadow: active
-                    ? [
-                        BoxShadow(
-                          color: C.primary.withOpacity(0.5),
-                          blurRadius: 15,
-                          spreadRadius: 2,
-                        )
-                      ]
-                    : [],
-              ),
-              child: const Center(
-                child: Text(
-                  'SOS',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    letterSpacing: 1,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+        child: Center(
+          child: Container(
+            width: 48, height: 48,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: const LinearGradient(
+                colors: [C.pinkLight, C.pinkDark],
+                begin: Alignment.topLeft, end: Alignment.bottomRight),
+              boxShadow: active ? [BoxShadow(
+                color: C.pinkGlow, blurRadius: 16, spreadRadius: 2)] : [],
             ),
-          ],
+            child: Center(child: Text('SOS', style: GoogleFonts.inter(
+              fontSize: 12, fontWeight: FontWeight.w900,
+              color: Colors.white, letterSpacing: 1.5))),
+          ),
         ),
       ),
+    );
+  }
+}
+
+
+class DCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsets? padding;
+  final Color? color;
+  final Color? borderColor;
+  final double radius;
+  const DCard({super.key, required this.child, this.padding,
+    this.color, this.borderColor, this.radius = 16});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: padding ?? const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color ?? C.surface2,
+        borderRadius: BorderRadius.circular(radius),
+        border: Border.all(color: borderColor ?? C.border),
+      ),
+      child: child,
+    );
+  }
+}
+
+class PinkBtn extends StatelessWidget {
+  final String label;
+  final VoidCallback? onTap;
+  final bool sm;
+  final IconData? icon;
+  const PinkBtn({super.key, required this.label,
+    this.onTap, this.sm = false, this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        height: sm ? 38 : 50,
+        decoration: BoxDecoration(
+          gradient: onTap != null
+            ? const LinearGradient(
+                colors: [C.pinkLight, C.pinkDark],
+                begin: Alignment.centerLeft, end: Alignment.centerRight)
+            : null,
+          color: onTap == null ? C.surface3 : null,
+          borderRadius: BorderRadius.circular(sm ? 10 : 13),
+          boxShadow: onTap != null ? [BoxShadow(
+            color: C.pinkGlow, blurRadius: 12, offset: const Offset(0, 4))] : [],
+        ),
+        child: Center(
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            if (icon != null) ...[
+              Icon(icon, color: Colors.white, size: sm ? 14 : 18),
+              const SizedBox(width: 6),
+            ],
+            Text(label, style: GoogleFonts.inter(
+              fontSize: sm ? 12 : 14, fontWeight: FontWeight.w700,
+              color: onTap != null ? Colors.white : C.textMuted)),
+          ]),
+        ),
+      ),
+    );
+  }
+}
+
+class StatusBadge extends StatelessWidget {
+  final String label; final Color color;
+  const StatusBadge({super.key, required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.35)),
+      ),
+      child: Text(label, style: GoogleFonts.inter(
+        fontSize: 10, fontWeight: FontWeight.w700, color: color)),
     );
   }
 }

@@ -1,4 +1,4 @@
-package com.example.safeher_id
+package com.example.safeher
 
 import io.flutter.embedding.android.FlutterActivity
 
