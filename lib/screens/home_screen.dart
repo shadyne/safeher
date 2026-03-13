@@ -405,7 +405,6 @@ class _ServiceTile extends StatelessWidget {
   final double iconSize;
 
   const _ServiceTile({
-    super.key,
     required this.svc,
     required this.fontSize,
     required this.iconSize,
@@ -452,7 +451,7 @@ class _ServiceTile extends StatelessWidget {
 
 class _IncTile extends StatelessWidget {
   final _Inc inc;
-  const _IncTile({super.key, required this.inc});
+  const _IncTile({required this.inc});
 
   @override
   Widget build(BuildContext context) {
