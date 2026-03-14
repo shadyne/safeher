@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:safeher/screens/chat_screen.dart';
+import 'package:safeher/screens/tips_screen.dart';
+import 'package:safeher/screens/verify_screen.dart';
 import '../main.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -265,75 +268,109 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _serviceGrid() {
-    final services = [
-      _Svc(Icons.map_rounded, 'Peta Aman', 'Lihat area rawan', C.pink, 1),
-      _Svc(Icons.sos_rounded, 'Panic Button', 'Kirim sinyal SOS', C.warning, 2),
-      _Svc(Icons.chat_rounded, 'Chat', 'Kirim Pesan', C.info, 4),
-      _Svc(
-        Icons.verified_user_rounded,
-        'Verifikasi',
-        'Verifikasi data',
-        C.safe,
-        4,
-      ),
-      _Svc(Icons.assignment_rounded, 'Laporan', 'Laporkan kejadian', C.pink, 3),
-      _Svc(
-        Icons.lightbulb_rounded,
-        'Tips Aman',
-        'Cara lindungi diri',
-        C.info,
-        0,
-      ),
-    ];
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        int crossAxisCount;
-        double childAspectRatio;
-        double fontSize;
-        double iconSize;
-
-        if (constraints.maxWidth < 400) {
-          // Smartphone kecil
-          crossAxisCount = 2;
-          childAspectRatio = 1.5;
-          fontSize = 11;
-          iconSize = 18;
-        } else if (constraints.maxWidth < 600) {
-          // Smartphone normal
-          crossAxisCount = 2;
-          childAspectRatio = 1.6;
-          fontSize = 12;
-          iconSize = 20;
-        } else if (constraints.maxWidth < 900) {
-          // Tablet kecil
-          crossAxisCount = 3;
-          childAspectRatio = 1.6;
-          fontSize = 13;
-          iconSize = 22;
-        } else {
-          // Tablet besar
-          crossAxisCount = 4;
-          childAspectRatio = 1.7;
-          fontSize = 14;
-          iconSize = 24;
-        }
-
-        return GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: crossAxisCount,
-            crossAxisSpacing: 12,
-            mainAxisSpacing: 12,
-            childAspectRatio: childAspectRatio,
+    return Builder(
+      builder: (context) {
+        final services = [
+          _Svc(Icons.map_rounded, 'Peta Aman', 'Lihat area rawan', C.info, 1),
+          _Svc(
+            Icons.sos_rounded,
+            'Panic Button',
+            'Kirim sinyal SOS',
+            C.pink,
+            2,
           ),
-          itemCount: services.length,
-          itemBuilder: (ctx, i) => _ServiceTile(
-            svc: services[i],
-            fontSize: fontSize,
-            iconSize: iconSize,
+          _Svc(
+            Icons.assignment_rounded,
+            'Laporan',
+            'Laporkan kejadian',
+            C.warning,
+            3,
           ),
+          _Svc(
+            Icons.lightbulb_rounded,
+            'Tips Aman',
+            'Cara lindungi diri',
+            C.safe,
+            0,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const TipsScreen()),
+            ),
+          ),
+          _Svc(
+            Icons.verified_user_rounded,
+            'Verifikasi',
+            'Verifikasi akunmu',
+            C.info,
+            0,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const VerifyScreen()),
+            ),
+          ),
+          _Svc(
+            Icons.chat_bubble_rounded,
+            'Chat',
+            'Komunitas & DM',
+            C.pink,
+            0,
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ChatScreen()),
+            ),
+          ),
+        ];
+
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            int crossAxisCount;
+            double childAspectRatio;
+            double fontSize;
+            double iconSize;
+
+            if (constraints.maxWidth < 400) {
+              // Smartphone kecil
+              crossAxisCount = 2;
+              childAspectRatio = 1.5;
+              fontSize = 11;
+              iconSize = 18;
+            } else if (constraints.maxWidth < 600) {
+              // Smartphone normal
+              crossAxisCount = 2;
+              childAspectRatio = 1.6;
+              fontSize = 12;
+              iconSize = 20;
+            } else if (constraints.maxWidth < 900) {
+              // Tablet kecil
+              crossAxisCount = 3;
+              childAspectRatio = 1.6;
+              fontSize = 13;
+              iconSize = 22;
+            } else {
+              // Tablet besar
+              crossAxisCount = 4;
+              childAspectRatio = 1.7;
+              fontSize = 14;
+              iconSize = 24;
+            }
+
+            return GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: crossAxisCount,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio: childAspectRatio,
+              ),
+              itemCount: services.length,
+              itemBuilder: (ctx, i) => _ServiceTile(
+                svc: services[i],
+                fontSize: fontSize,
+                iconSize: iconSize,
+              ),
+            );
+          },
         );
       },
     );
@@ -372,7 +409,15 @@ class _Svc {
   final String label, sub;
   final Color color;
   final int nav;
-  const _Svc(this.icon, this.label, this.sub, this.color, this.nav);
+  final VoidCallback? onTap;
+  const _Svc(
+    this.icon,
+    this.label,
+    this.sub,
+    this.color,
+    this.nav, {
+    this.onTap,
+  });
 }
 
 class _Inc {
@@ -414,6 +459,11 @@ class _ServiceTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        if (svc.onTap != null) {
+          svc.onTap!();
+          return;
+        }
+        // Prioritas 2: navigasi ke tab bottom bar via nav index
         if (svc.nav > 0) {
           context.findAncestorStateOfType<AppShellState>()?.goTo(svc.nav);
         }

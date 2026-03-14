@@ -5,6 +5,10 @@ import 'screens/home_screen.dart';
 import 'screens/map_screen.dart';
 import 'screens/panic_screen.dart';
 import 'screens/report_screen.dart';
+import 'screens/login_screen.dart';
+import 'screens/verify_screen.dart';
+import 'screens/chat_screen.dart';
+import 'screens/tips_screen.dart';
 
 class C {
   static const bg = Color(0xFF0D0D14);
@@ -77,7 +81,7 @@ class SafeHerApp extends StatelessWidget {
         splashColor: Colors.transparent,
         highlightColor: Colors.transparent,
       ),
-      home: const AppShell(),
+      home: const LoginScreen(),
     );
   }
 }
@@ -104,6 +108,7 @@ class AppShellState extends State<AppShell> {
           MapScreen(),
           PanicScreen(),
           ReportScreen(),
+          ChatScreen(),
         ],
       ),
       bottomNavigationBar: _BottomBar(idx: idx, onTap: goTo),
@@ -159,11 +164,11 @@ class _BottomBar extends StatelessWidget {
                 onTap: onTap,
               ),
               _NavItem(
-                icon: Icons.person_rounded,
-                label: 'Profil',
+                icon: Icons.chat_bubble_rounded,
+                label: 'Chat',
                 i: 4,
                 idx: idx,
-                onTap: (_) {},
+                onTap: onTap,
               ),
             ],
           ),
