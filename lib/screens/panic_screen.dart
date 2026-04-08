@@ -159,40 +159,35 @@ class _PanicScreenState extends State<PanicScreen>
   }
 
   Widget _topBar() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(18, 18, 18, 14),
-      child: Row(
-        children: [
-          const Icon(Icons.sos_rounded, color: C.pink, size: 22),
-          const SizedBox(width: 8),
-          Expanded(child: Text('Panic Button', style: TS.h(20))),
-          GestureDetector(
-            onTap: () => _showAddContact(context),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
-              decoration: BoxDecoration(
-                color: C.pinkSoft,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: C.pink.withOpacity(0.3)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.add_rounded, color: C.pink, size: 14),
-                  const SizedBox(width: 4),
-                  Text(
-                    'Kontak',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      color: C.pink,
-                      fontWeight: FontWeight.w600,
-                    ),
+    return AppTopBar(
+      title: 'Panic Button',
+      actions: [
+        GestureDetector(
+          onTap: () => _showAddContact(context),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+            decoration: BoxDecoration(
+              color: C.pinkSoft,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: C.pink.withOpacity(0.3)),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.add_rounded, color: C.pink, size: 14),
+                const SizedBox(width: 4),
+                Text(
+                  'Kontak',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    color: C.pink,
+                    fontWeight: FontWeight.w600,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -361,7 +356,6 @@ class _PanicScreenState extends State<PanicScreen>
               ],
             ),
           ),
-          // Feature 4: Recording banner
           if (_isRecording) ...[
             const SizedBox(height: 10),
             Container(

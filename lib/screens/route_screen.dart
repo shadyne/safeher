@@ -19,7 +19,7 @@ class _RouteScreenState extends State<RouteScreen> {
       duration: '12 menit',
       distance: '2.1 km',
       riskLevel: 68,
-      riskLabel: 'Risiko Tinggi',
+      riskLabel: 'Sangat Bahaya',
       riskColor: Color(0xFFE91E8C),
       via: 'via Jl. Sudirman → Jl. Thamrin',
       incidents: [
@@ -37,7 +37,7 @@ class _RouteScreenState extends State<RouteScreen> {
       duration: '20 menit',
       distance: '3.4 km',
       riskLevel: 35,
-      riskLabel: 'Risiko Rendah',
+      riskLabel: 'Aman',
       riskColor: Color(0xFF00E676),
       via: 'via Jl. Gatot Subroto → Jl. HR Rasuna Said',
       incidents: ['Jalur ramai 24 jam', 'CCTV terpasang', 'Banyak warung buka'],
@@ -75,7 +75,7 @@ class _RouteScreenState extends State<RouteScreen> {
                   _detailPanel(_routes[_selected]),
                   const SizedBox(height: 16),
                   PinkBtn(
-                    label: 'Mulai Navigasi',
+                    label: 'Mulai Navigasi (Prototype)',
                     icon: Icons.navigation_rounded,
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -119,17 +119,7 @@ class _RouteScreenState extends State<RouteScreen> {
   }
 
   Widget _topBar() {
-    return Container(
-      color: C.surface,
-      padding: const EdgeInsets.fromLTRB(18, 52, 18, 14),
-      child: Row(
-        children: [
-          const Icon(Icons.alt_route_rounded, color: C.pink, size: 20),
-          const SizedBox(width: 8),
-          Expanded(child: Text('Perbandingan Rute', style: TS.h(20))),
-        ],
-      ),
-    );
+    return AppTopBar(title: 'Perbandingan Rute', showBack: true);
   }
 
   Widget _originDestCard() {
@@ -213,7 +203,7 @@ class _RouteScreenState extends State<RouteScreen> {
             ],
           ),
           const SizedBox(height: 14),
-          // Risk bar
+
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

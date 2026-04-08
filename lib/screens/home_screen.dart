@@ -310,10 +310,10 @@ class HomeScreen extends StatelessWidget {
                       ),
                       child: Text(
                         _isNight
-                            ? '🌙 Malam'
+                            ? 'Malam'
                             : _isEvening
-                            ? '🌆 Sore'
-                            : '☀️ Siang',
+                            ? 'Sore'
+                            : 'Siang',
                         style: GoogleFonts.inter(
                           fontSize: 9,
                           fontWeight: FontWeight.w600,
@@ -489,21 +489,21 @@ class HomeScreen extends StatelessWidget {
         'Jl. Sudirman · 2.3 km',
         '2j lalu',
         C.danger,
-        'Tinggi',
+        'Sangat Bahaya',
       ),
       _Inc(
         'Pencurian Tas',
         'Stasiun Gambir · 4 km',
         '5j lalu',
         C.warning,
-        'Sedang',
+        'Waspada',
       ),
       _Inc(
         'Area Rawan Malam',
         'Tanah Abang · 5.5 km',
         '1h lalu',
         C.danger,
-        'Tinggi',
+        'Sangat Bahaya',
       ),
     ];
     return Column(children: list.map((e) => _IncTile(inc: e)).toList());

@@ -102,7 +102,7 @@ class _NearbyScreenState extends State<NearbyScreen>
             const SizedBox(width: 10),
             Expanded(
               child: Text(
-                'Permintaan ke ${_users[idx].name} berhasil dikirim',
+                'Permintaan ke ${_users[idx].name} berhasil dikirim (prototype)',
                 style: GoogleFonts.inter(fontSize: 13, color: C.textPri),
               ),
             ),
@@ -127,56 +127,51 @@ class _NearbyScreenState extends State<NearbyScreen>
   }
 
   Widget _topBar() {
-    return Container(
-      color: C.surface,
-      padding: const EdgeInsets.fromLTRB(18, 52, 18, 14),
-      child: Row(
-        children: [
-          const Icon(Icons.people_rounded, color: C.pink, size: 20),
-          const SizedBox(width: 8),
-          Expanded(child: Text('Mode Temenin Jalan', style: TS.h(20))),
-          if (!_searching)
-            AnimatedBuilder(
-              animation: _pulseAnim,
-              builder: (_, __) => Opacity(
-                opacity: _pulseAnim.value,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: C.safe.withOpacity(0.12),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: C.safe.withOpacity(0.3)),
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 7,
-                        height: 7,
-                        decoration: const BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: C.safe,
-                        ),
+    return AppTopBar(
+      title: 'Mode Temenin Jalan',
+      showBack: true,
+      actions: [
+        if (!_searching)
+          AnimatedBuilder(
+            animation: _pulseAnim,
+            builder: (_, __) => Opacity(
+              opacity: _pulseAnim.value,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: C.safe.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: C.safe.withOpacity(0.3)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 7,
+                      height: 7,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: C.safe,
                       ),
-                      const SizedBox(width: 5),
-                      Text(
-                        'LIVE',
-                        style: GoogleFonts.inter(
-                          fontSize: 11,
-                          color: C.safe,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1.5,
-                        ),
+                    ),
+                    const SizedBox(width: 5),
+                    Text(
+                      'LIVE',
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        color: C.safe,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 1.5,
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 

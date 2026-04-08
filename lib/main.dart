@@ -272,6 +272,53 @@ class _SosItem extends StatelessWidget {
   }
 }
 
+class AppTopBar extends StatelessWidget {
+  final String title;
+  final List<Widget> actions;
+  final bool showBack;
+
+  const AppTopBar({
+    super.key,
+    required this.title,
+    this.actions = const [],
+    this.showBack = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final canPop = showBack || Navigator.of(context).canPop();
+    return Container(
+      color: C.surface,
+      padding: EdgeInsets.fromLTRB(canPop ? 6 : 18, 52, 18, 14),
+      child: Row(
+        children: [
+          if (canPop)
+            GestureDetector(
+              onTap: () => Navigator.of(context).pop(),
+              child: Container(
+                width: 36,
+                height: 36,
+                margin: const EdgeInsets.only(right: 6),
+                decoration: BoxDecoration(
+                  color: C.surface3,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: C.border),
+                ),
+                child: const Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  color: C.textSec,
+                  size: 16,
+                ),
+              ),
+            ),
+          Expanded(child: Text(title, style: TS.h(20))),
+          ...actions,
+        ],
+      ),
+    );
+  }
+}
+
 class DCard extends StatelessWidget {
   final Widget child;
   final EdgeInsets? padding;

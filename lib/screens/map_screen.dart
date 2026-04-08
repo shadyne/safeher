@@ -22,7 +22,6 @@ class _MapScreenState extends State<MapScreen> {
   int? _selected;
   bool _showNearby = true;
   int? _selectedNearby;
-
   final _filters = ['Semua', 'Pelecehan', 'Pencurian', 'Kekerasan'];
 
   static const _nearbyUsers = [
@@ -148,79 +147,73 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Widget _topBar() {
-    return Container(
-      color: C.surface,
-      padding: const EdgeInsets.fromLTRB(18, 52, 18, 14),
-      child: Row(
-        children: [
-          Icon(Icons.map_rounded, color: C.pink, size: 20),
-          const SizedBox(width: 8),
-          Expanded(child: Text('Peta Aman', style: TS.h(20))),
-          GestureDetector(
-            onTap: () => setState(() {
-              _showNearby = !_showNearby;
-              _selectedNearby = null;
-            }),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              margin: const EdgeInsets.only(right: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-              decoration: BoxDecoration(
-                color: _showNearby ? C.safe.withOpacity(0.12) : C.surface3,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: _showNearby ? C.safe.withOpacity(0.4) : C.border,
+    return AppTopBar(
+      title: 'Peta Aman',
+      actions: [
+        GestureDetector(
+          onTap: () => setState(() {
+            _showNearby = !_showNearby;
+            _selectedNearby = null;
+          }),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            margin: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+            decoration: BoxDecoration(
+              color: _showNearby ? C.safe.withOpacity(0.12) : C.surface3,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(
+                color: _showNearby ? C.safe.withOpacity(0.4) : C.border,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.people_rounded,
+                  color: _showNearby ? C.safe : C.textMuted,
+                  size: 15,
                 ),
-              ),
-              child: Row(
-                children: [
-                  Icon(
-                    Icons.people_rounded,
+                const SizedBox(width: 4),
+                Text(
+                  '${_nearbyUsers.length}',
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w700,
                     color: _showNearby ? C.safe : C.textMuted,
-                    size: 15,
                   ),
-                  const SizedBox(width: 4),
-                  Text(
-                    '${_nearbyUsers.length}',
-                    style: GoogleFonts.inter(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: _showNearby ? C.safe : C.textMuted,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          GestureDetector(
-            onTap: () {
-              if (_userPos != null) _ctrl.move(_userPos!, 15);
-            },
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: C.pinkSoft,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: C.pink.withOpacity(0.3)),
-              ),
-              child: _loading
-                  ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: C.pink,
-                      ),
-                    )
-                  : const Icon(
-                      Icons.my_location_rounded,
+        ),
+        GestureDetector(
+          onTap: () {
+            if (_userPos != null) _ctrl.move(_userPos!, 15);
+          },
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: C.pinkSoft,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: C.pink.withOpacity(0.3)),
+            ),
+            child: _loading
+                ? const SizedBox(
+                    width: 16,
+                    height: 16,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
                       color: C.pink,
-                      size: 18,
                     ),
-            ),
+                  )
+                : const Icon(
+                    Icons.my_location_rounded,
+                    color: C.pink,
+                    size: 18,
+                  ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -442,6 +435,7 @@ class _MapScreenState extends State<MapScreen> {
             }).toList(),
           ),
 
+        // Popup user online saat di-tap
         if (_showNearby && _selectedNearby != null)
           MarkerLayer(
             markers: [
@@ -587,11 +581,11 @@ class _Zone {
   String get lvLabel {
     switch (lv) {
       case ZLv.high:
-        return 'Tinggi';
+        return 'Sangat Bahaya';
       case ZLv.medium:
-        return 'Sedang';
+        return 'Rawan Bahaya';
       case ZLv.low:
-        return 'Rendah';
+        return 'Aman';
     }
   }
 }
@@ -614,11 +608,11 @@ class _Legend extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _LI(C.danger, 'Tinggi'),
+              _LI(C.danger, 'Sangat Bahaya'),
               const SizedBox(height: 5),
-              _LI(C.warning, 'Sedang'),
+              _LI(C.warning, 'Rawan Bahaya'),
               const SizedBox(height: 5),
-              _LI(C.safe, 'Rendah'),
+              _LI(C.safe, 'Aman'),
               const SizedBox(height: 5),
               _LI(C.info, 'Kamu'),
               const SizedBox(height: 5),
@@ -754,7 +748,6 @@ class _OnlineUser {
   );
 }
 
-// --- Popup saat marker user online di-tap ---
 class _NearbyPopup extends StatelessWidget {
   final _OnlineUser user;
   final VoidCallback onClose;

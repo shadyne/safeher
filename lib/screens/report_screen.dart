@@ -45,38 +45,32 @@ class _ReportScreenState extends State<ReportScreen>
   }
 
   Widget _header() {
-    return Container(
-      color: C.surface,
-      padding: const EdgeInsets.fromLTRB(18, 52, 18, 14),
-      child: Row(
-        children: [
-          Icon(Icons.assignment_rounded, color: C.pink, size: 20),
-          const SizedBox(width: 8),
-          Expanded(child: Text('Laporan Kejadian', style: TS.h(20))),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: C.pinkSoft,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: C.pink.withOpacity(0.3)),
-            ),
-            child: Row(
-              children: [
-                const Icon(Icons.lock_rounded, size: 11, color: C.pink),
-                const SizedBox(width: 4),
-                Text(
-                  'Anonim',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    color: C.pink,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
+    return AppTopBar(
+      title: 'Laporan Kejadian',
+      actions: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(
+            color: C.pinkSoft,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: C.pink.withOpacity(0.3)),
           ),
-        ],
-      ),
+          child: Row(
+            children: [
+              const Icon(Icons.lock_rounded, size: 11, color: C.pink),
+              const SizedBox(width: 4),
+              Text(
+                'Anonim',
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  color: C.pink,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 

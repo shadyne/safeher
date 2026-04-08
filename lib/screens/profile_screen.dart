@@ -26,6 +26,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: C.bg,
       body: ListView(
         children: [
+          AppTopBar(title: 'Profil Saya'),
           _profileHeader(),
           _statRow(),
           const SizedBox(height: 8),

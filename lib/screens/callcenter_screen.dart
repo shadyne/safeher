@@ -75,7 +75,6 @@ class CallCenterScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Group by category
     final Map<String, List<_CCContact>> grouped = {};
     for (final c in _contacts) {
       grouped.putIfAbsent(c.category, () => []).add(c);
@@ -104,45 +103,40 @@ class CallCenterScreen extends StatelessWidget {
   }
 
   Widget _topBar() {
-    return Container(
-      color: C.surface,
-      padding: const EdgeInsets.fromLTRB(18, 52, 18, 14),
-      child: Row(
-        children: [
-          const Icon(Icons.phone_rounded, color: C.pink, size: 20),
-          const SizedBox(width: 8),
-          Expanded(child: Text('Kontak Darurat', style: TS.h(20))),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: C.safe.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: C.safe.withOpacity(0.3)),
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 7,
-                  height: 7,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: C.safe,
-                  ),
-                ),
-                const SizedBox(width: 5),
-                Text(
-                  '24 Jam',
-                  style: GoogleFonts.inter(
-                    fontSize: 11,
-                    color: C.safe,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ],
-            ),
+    return AppTopBar(
+      title: 'Kontak Darurat',
+      showBack: true,
+      actions: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          decoration: BoxDecoration(
+            color: C.safe.withOpacity(0.12),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: C.safe.withOpacity(0.3)),
           ),
-        ],
-      ),
+          child: Row(
+            children: [
+              Container(
+                width: 7,
+                height: 7,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: C.safe,
+                ),
+              ),
+              const SizedBox(width: 5),
+              Text(
+                '24 Jam',
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  color: C.safe,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
