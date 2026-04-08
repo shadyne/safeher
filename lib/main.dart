@@ -5,6 +5,10 @@ import 'screens/home_screen.dart';
 import 'screens/map_screen.dart';
 import 'screens/panic_screen.dart';
 import 'screens/report_screen.dart';
+import 'screens/callcenter_screen.dart';
+import 'screens/nearby_screen.dart';
+import 'screens/route_screen.dart';
+import 'screens/profile_screen.dart';
 
 class C {
   static const bg = Color(0xFF0D0D14);
@@ -93,6 +97,10 @@ class AppShellState extends State<AppShell> {
 
   void goTo(int i) => setState(() => idx = i);
 
+  void pushFeature(Widget screen) {
+    Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -104,6 +112,7 @@ class AppShellState extends State<AppShell> {
           MapScreen(),
           PanicScreen(),
           ReportScreen(),
+          ProfileScreen(),
         ],
       ),
       bottomNavigationBar: _BottomBar(idx: idx, onTap: goTo),
@@ -163,7 +172,7 @@ class _BottomBar extends StatelessWidget {
                 label: 'Profil',
                 i: 4,
                 idx: idx,
-                onTap: (_) {},
+                onTap: onTap,
               ),
             ],
           ),
@@ -358,7 +367,13 @@ class PinkBtn extends StatelessWidget {
 class StatusBadge extends StatelessWidget {
   final String label;
   final Color color;
-  const StatusBadge({super.key, required this.label, required this.color});
+  final double fontSize;
+  const StatusBadge({
+    super.key,
+    required this.label,
+    required this.color,
+    this.fontSize = 10,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -372,7 +387,7 @@ class StatusBadge extends StatelessWidget {
       child: Text(
         label,
         style: GoogleFonts.inter(
-          fontSize: 10,
+          fontSize: fontSize,
           fontWeight: FontWeight.w700,
           color: color,
         ),

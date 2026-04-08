@@ -20,8 +20,48 @@ class _MapScreenState extends State<MapScreen> {
   bool _loading = true;
   String _filter = 'Semua';
   int? _selected;
+  bool _showNearby = true;
+  int? _selectedNearby;
 
   final _filters = ['Semua', 'Pelecehan', 'Pencurian', 'Kekerasan'];
+
+  static const _nearbyUsers = [
+    _OnlineUser(
+      'Alya',
+      'A',
+      LatLng(-6.2060, 106.8420),
+      Color(0xFFE91E8C),
+      '120m',
+    ),
+    _OnlineUser(
+      'Sinta',
+      'S',
+      LatLng(-6.2130, 106.8510),
+      Color(0xFF9C27B0),
+      '300m',
+    ),
+    _OnlineUser(
+      'Rara',
+      'R',
+      LatLng(-6.2010, 106.8380),
+      Color(0xFF448AFF),
+      '450m',
+    ),
+    _OnlineUser(
+      'Dewi',
+      'D',
+      LatLng(-6.2170, 106.8350),
+      Color(0xFF00E676),
+      '680m',
+    ),
+    _OnlineUser(
+      'Putri',
+      'P',
+      LatLng(-6.1990, 106.8490),
+      Color(0xFFFFAB00),
+      '920m',
+    ),
+  ];
 
   final _zones = const [
     _Zone(
@@ -117,6 +157,42 @@ class _MapScreenState extends State<MapScreen> {
           const SizedBox(width: 8),
           Expanded(child: Text('Peta Aman', style: TS.h(20))),
           GestureDetector(
+            onTap: () => setState(() {
+              _showNearby = !_showNearby;
+              _selectedNearby = null;
+            }),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 180),
+              margin: const EdgeInsets.only(right: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: _showNearby ? C.safe.withOpacity(0.12) : C.surface3,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: _showNearby ? C.safe.withOpacity(0.4) : C.border,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.people_rounded,
+                    color: _showNearby ? C.safe : C.textMuted,
+                    size: 15,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${_nearbyUsers.length}',
+                    style: GoogleFonts.inter(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: _showNearby ? C.safe : C.textMuted,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          GestureDetector(
             onTap: () {
               if (_userPos != null) _ctrl.move(_userPos!, 15);
             },
@@ -196,7 +272,10 @@ class _MapScreenState extends State<MapScreen> {
         initialZoom: 13.0,
         minZoom: 9,
         maxZoom: 18,
-        onTap: (_, _) => setState(() => _selected = null),
+        onTap: (_, _) => setState(() {
+          _selected = null;
+          _selectedNearby = null;
+        }),
       ),
       children: [
         TileLayer(
@@ -310,6 +389,105 @@ class _MapScreenState extends State<MapScreen> {
                 child: _Popup(
                   zone: zones[_selected!],
                   onClose: () => setState(() => _selected = null),
+                ),
+              ),
+            ],
+          ),
+
+        if (_showNearby)
+          MarkerLayer(
+            markers: _nearbyUsers.asMap().entries.map((entry) {
+              final i = entry.key;
+              final u = entry.value;
+              final sel = _selectedNearby == i;
+              return Marker(
+                point: u.pos,
+                width: sel ? 44 : 34,
+                height: sel ? 44 : 34,
+                child: GestureDetector(
+                  onTap: () => setState(() {
+                    _selectedNearby = _selectedNearby == i ? null : i;
+                    _selected = null;
+                    _ctrl.move(u.pos, 15);
+                  }),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: u.color,
+                      border: Border.all(
+                        color: sel ? Colors.white : u.color.withOpacity(0.5),
+                        width: sel ? 3 : 2,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: u.color.withOpacity(sel ? 0.7 : 0.4),
+                          blurRadius: sel ? 14 : 8,
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        u.avatar,
+                        style: GoogleFonts.inter(
+                          fontSize: sel ? 16 : 12,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+
+        if (_showNearby && _selectedNearby != null)
+          MarkerLayer(
+            markers: [
+              Marker(
+                point: _nearbyUsers[_selectedNearby!].pos,
+                width: 210,
+                height: 80,
+                alignment: Alignment.topCenter,
+                child: _NearbyPopup(
+                  user: _nearbyUsers[_selectedNearby!],
+                  onClose: () => setState(() => _selectedNearby = null),
+                  onInvite: () {
+                    setState(() => _selectedNearby = null);
+                    final u = _nearbyUsers[_selectedNearby ?? 0];
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        behavior: SnackBarBehavior.floating,
+                        margin: const EdgeInsets.all(16),
+                        backgroundColor: C.surface2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(color: C.pink.withOpacity(0.4)),
+                        ),
+                        content: Row(
+                          children: [
+                            const Icon(
+                              Icons.check_circle_rounded,
+                              color: C.safe,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Text(
+                                'Permintaan ke ${u.name} berhasil dikirim!',
+                                style: GoogleFonts.inter(
+                                  fontSize: 13,
+                                  color: C.textPri,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        duration: const Duration(seconds: 3),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -443,6 +621,8 @@ class _Legend extends StatelessWidget {
               _LI(C.safe, 'Rendah'),
               const SizedBox(height: 5),
               _LI(C.info, 'Kamu'),
+              const SizedBox(height: 5),
+              _LI(Color(0xFF9C27B0), 'Online'),
             ],
           ),
         ),
@@ -556,6 +736,105 @@ class _ZoneChip extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _OnlineUser {
+  final String name, avatar, distance;
+  final LatLng pos;
+  final Color color;
+  const _OnlineUser(
+    this.name,
+    this.avatar,
+    this.pos,
+    this.color,
+    this.distance,
+  );
+}
+
+// --- Popup saat marker user online di-tap ---
+class _NearbyPopup extends StatelessWidget {
+  final _OnlineUser user;
+  final VoidCallback onClose;
+  final VoidCallback onInvite;
+  const _NearbyPopup({
+    required this.user,
+    required this.onClose,
+    required this.onInvite,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: C.surface,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: user.color.withOpacity(0.55)),
+        boxShadow: const [BoxShadow(color: Colors.black45, blurRadius: 8)],
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 28,
+            height: 28,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: user.color,
+            ),
+            child: Center(
+              child: Text(
+                user.avatar,
+                style: GoogleFonts.inter(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(user.name, style: TS.b(11)),
+                Text('${user.distance} · Online', style: TS.r(9)),
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: onInvite,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: C.pinkSoft,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: C.pink.withOpacity(0.3)),
+              ),
+              child: Text(
+                'Ajak',
+                style: GoogleFonts.inter(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                  color: C.pink,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(width: 6),
+          GestureDetector(
+            onTap: onClose,
+            child: const Icon(
+              Icons.close_rounded,
+              color: C.textMuted,
+              size: 14,
+            ),
+          ),
+        ],
       ),
     );
   }

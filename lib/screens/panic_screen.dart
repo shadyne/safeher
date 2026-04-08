@@ -16,10 +16,17 @@ class _PanicScreenState extends State<PanicScreen>
   int _cd = 3;
   Timer? _timer;
 
+  bool _isRecording = false;
+  int _recordSeconds = 0;
+  Timer? _recordTimer;
+
   late AnimationController _pulseCtrl;
   late Animation<double> _pulseAnim;
   late AnimationController _ringCtrl;
   late Animation<double> _ringAnim;
+
+  late AnimationController _blinkCtrl;
+  late Animation<double> _blinkAnim;
 
   final _contacts = [
     _Con('Mama', '+62 812-3456-7890', Icons.person_rounded),
@@ -46,13 +53,24 @@ class _PanicScreenState extends State<PanicScreen>
       begin: 0.0,
       end: 1.0,
     ).animate(CurvedAnimation(parent: _ringCtrl, curve: Curves.easeOut));
+
+    _blinkCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    _blinkAnim = Tween<double>(
+      begin: 0.3,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _blinkCtrl, curve: Curves.easeInOut));
   }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _recordTimer?.cancel();
     _pulseCtrl.dispose();
     _ringCtrl.dispose();
+    _blinkCtrl.dispose();
     super.dispose();
   }
 
@@ -82,18 +100,39 @@ class _PanicScreenState extends State<PanicScreen>
     setState(() => _st = _PState.active);
     _pulseCtrl.repeat(reverse: true);
     _ringCtrl.repeat();
+
+    Future.delayed(const Duration(seconds: 1), () {
+      if (mounted && _st == _PState.active) {
+        setState(() => _isRecording = true);
+        _blinkCtrl.repeat(reverse: true);
+        _recordTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+          if (mounted) setState(() => _recordSeconds++);
+        });
+      }
+    });
   }
 
   void _cancel() {
     _timer?.cancel();
+    _recordTimer?.cancel();
     _pulseCtrl.stop();
     _pulseCtrl.reset();
     _ringCtrl.stop();
     _ringCtrl.reset();
+    _blinkCtrl.stop();
+    _blinkCtrl.reset();
     setState(() {
       _st = _PState.idle;
       _cd = 3;
+      _isRecording = false;
+      _recordSeconds = 0;
     });
+  }
+
+  String _formatDuration(int seconds) {
+    final m = (seconds ~/ 60).toString().padLeft(2, '0');
+    final s = (seconds % 60).toString().padLeft(2, '0');
+    return '$m:$s';
   }
 
   @override
@@ -314,10 +353,63 @@ class _PanicScreenState extends State<PanicScreen>
                 const SizedBox(height: 8),
                 _ProcessRow(label: 'Notif ke kontak', done: true),
                 const SizedBox(height: 8),
-                _ProcessRow(label: 'Rekam audio', done: false),
+                _RecordingRow(
+                  isRecording: _isRecording,
+                  duration: _formatDuration(_recordSeconds),
+                  blinkAnim: _blinkAnim,
+                ),
               ],
             ),
           ),
+          // Feature 4: Recording banner
+          if (_isRecording) ...[
+            const SizedBox(height: 10),
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 18),
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              decoration: BoxDecoration(
+                color: C.danger.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: C.danger.withOpacity(0.4)),
+              ),
+              child: Row(
+                children: [
+                  AnimatedBuilder(
+                    animation: _blinkAnim,
+                    builder: (_, __) => Opacity(
+                      opacity: _blinkAnim.value,
+                      child: Container(
+                        width: 10,
+                        height: 10,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: C.danger,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Text(
+                    'Sedang merekam...',
+                    style: GoogleFonts.inter(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w700,
+                      color: C.danger,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    _formatDuration(_recordSeconds),
+                    style: GoogleFonts.inter(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: C.danger,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
           const SizedBox(height: 14),
           SizedBox(
             width: 160,
@@ -456,6 +548,61 @@ class _ProcessRow extends StatelessWidget {
                   backgroundColor: C.surface3,
                 ),
         ),
+      ],
+    );
+  }
+}
+
+class _RecordingRow extends StatelessWidget {
+  final bool isRecording;
+  final String duration;
+  final Animation<double> blinkAnim;
+  const _RecordingRow({
+    required this.isRecording,
+    required this.duration,
+    required this.blinkAnim,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(child: Text('Rekam audio/video', style: TS.r(12))),
+        if (!isRecording)
+          SizedBox(
+            width: 20,
+            height: 20,
+            child: CircularProgressIndicator(
+              strokeWidth: 2.5,
+              color: C.pink,
+              backgroundColor: C.surface3,
+            ),
+          )
+        else
+          Row(
+            children: [
+              Text(
+                duration,
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  color: C.danger,
+                ),
+              ),
+              const SizedBox(width: 6),
+              AnimatedBuilder(
+                animation: blinkAnim,
+                builder: (_, __) => Opacity(
+                  opacity: blinkAnim.value,
+                  child: const Icon(
+                    Icons.fiber_manual_record_rounded,
+                    color: C.danger,
+                    size: 16,
+                  ),
+                ),
+              ),
+            ],
+          ),
       ],
     );
   }

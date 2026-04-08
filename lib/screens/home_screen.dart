@@ -1,9 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../main.dart';
+import 'callcenter_screen.dart';
+import 'nearby_screen.dart';
+import 'route_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
+
+  static bool get _isNight {
+    final h = DateTime.now().hour;
+    return h >= 21 || h < 5;
+  }
+
+  static bool get _isEvening {
+    final h = DateTime.now().hour;
+    return h >= 18 && h < 21;
+  }
+
+  String get _areaStatus {
+    if (_isNight) return 'Waspada Malam';
+    if (_isEvening) return 'Mulai Waspada';
+    return 'Relatif Aman';
+  }
+
+  Color get _areaColor {
+    if (_isNight) return C.danger;
+    if (_isEvening) return C.warning;
+    return C.safe;
+  }
+
+  String get _areaWarning {
+    if (_isNight) {
+      return 'Area ini rawan pelecehan pada malam hari. Hindari jalan sendirian, pilih rute ramai.';
+    }
+    if (_isEvening) {
+      return 'Menjelang malam, tingkat kewaspadaan meningkat. Pertimbangkan pulang lebih awal.';
+    }
+    return 'Area lokasimu relatif aman saat ini. Tetap waspada dan jaga sekitarmu.';
+  }
+
+  IconData get _areaIcon {
+    if (_isNight) return Icons.nightlight_rounded;
+    if (_isEvening) return Icons.wb_twilight_rounded;
+    return Icons.shield_rounded;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +63,15 @@ class HomeScreen extends StatelessWidget {
               _metricRow(),
               const SizedBox(height: 20),
 
+              _timeWarning(),
+              const SizedBox(height: 16),
+
               _safetyTip(),
               const SizedBox(height: 24),
 
               _label('Fitur Utama'),
               const SizedBox(height: 14),
-              _serviceGrid(),
+              _serviceGrid(context),
               const SizedBox(height: 24),
 
               Row(
@@ -110,9 +154,9 @@ class HomeScreen extends StatelessWidget {
       children: [
         Expanded(
           child: _buildMetricCard(
-            icon: Icons.shield_rounded,
-            color: C.safe,
-            label: 'Relatif Aman',
+            icon: _areaIcon,
+            color: _areaColor,
+            label: _areaStatus,
             sublabel: 'Status area\nlokasimu saat ini',
             showLive: true,
           ),
@@ -218,6 +262,77 @@ class HomeScreen extends StatelessWidget {
 
   Widget _label(String t) => Text(t, style: TS.b(14, c: C.textSec));
 
+  Widget _timeWarning() {
+    return DCard(
+      padding: const EdgeInsets.all(14),
+      borderColor: _areaColor.withOpacity(0.35),
+      color: _areaColor.withOpacity(0.05),
+      child: Row(
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: _areaColor.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(11),
+            ),
+            child: Icon(_areaIcon, color: _areaColor, size: 20),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      _isNight
+                          ? 'Peringatan Malam'
+                          : _isEvening
+                          ? 'Status Sore'
+                          : 'Status Area',
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: _areaColor,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _areaColor.withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        _isNight
+                            ? '🌙 Malam'
+                            : _isEvening
+                            ? '🌆 Sore'
+                            : '☀️ Siang',
+                        style: GoogleFonts.inter(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w600,
+                          color: _areaColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 3),
+                Text(_areaWarning, style: TS.r(11, h: 1.4)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _safetyTip() {
     return DCard(
       padding: const EdgeInsets.all(14),
@@ -253,7 +368,7 @@ class HomeScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 3),
                 Text(
-                  'Hindari jalan sepi setelah pukul 21.00.Selalu pilih rute yang ramai.',
+                  'Hindari jalan sepi setelah pukul 21.00. Selalu pilih rute yang ramai.',
                   style: TS.r(11, h: 1.4),
                 ),
               ],
@@ -264,25 +379,57 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _serviceGrid() {
+  Widget _serviceGrid(BuildContext context) {
     final services = [
-      _Svc(Icons.map_rounded, 'Peta Aman', 'Lihat area rawan', C.pink, 1),
-      _Svc(Icons.sos_rounded, 'Panic Button', 'Kirim sinyal SOS', C.warning, 2),
-      _Svc(Icons.chat_rounded, 'Chat', 'Kirim Pesan', C.info, 4),
+      _Svc(Icons.map_rounded, 'Peta Aman', 'Lihat area rawan', C.pink, 1, null),
       _Svc(
-        Icons.verified_user_rounded,
-        'Verifikasi',
-        'Verifikasi data',
-        C.safe,
-        4,
+        Icons.sos_rounded,
+        'Panic Button',
+        'Kirim sinyal SOS',
+        C.warning,
+        2,
+        null,
       ),
-      _Svc(Icons.assignment_rounded, 'Laporan', 'Laporkan kejadian', C.pink, 3),
       _Svc(
-        Icons.lightbulb_rounded,
-        'Tips Aman',
-        'Cara lindungi diri',
+        Icons.alt_route_rounded,
+        'Rute Aman',
+        'Bandingkan rute',
         C.info,
-        0,
+        -1,
+        () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const RouteScreen()),
+        ),
+      ),
+      _Svc(
+        Icons.people_rounded,
+        'Temenin Jalan',
+        'Cari teman dekat',
+        C.safe,
+        -1,
+        () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const NearbyScreen()),
+        ),
+      ),
+      _Svc(
+        Icons.phone_rounded,
+        'Kontak Darurat',
+        'Hubungi bantuan',
+        C.warning,
+        -1,
+        () => Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const CallCenterScreen()),
+        ),
+      ),
+      _Svc(
+        Icons.assignment_rounded,
+        'Laporan',
+        'Laporkan kejadian',
+        C.pink,
+        3,
+        null,
       ),
     ];
 
@@ -294,25 +441,21 @@ class HomeScreen extends StatelessWidget {
         double iconSize;
 
         if (constraints.maxWidth < 400) {
-          // Smartphone kecil
           crossAxisCount = 2;
           childAspectRatio = 1.5;
           fontSize = 11;
           iconSize = 18;
         } else if (constraints.maxWidth < 600) {
-          // Smartphone normal
           crossAxisCount = 2;
           childAspectRatio = 1.6;
           fontSize = 12;
           iconSize = 20;
         } else if (constraints.maxWidth < 900) {
-          // Tablet kecil
           crossAxisCount = 3;
           childAspectRatio = 1.6;
           fontSize = 13;
           iconSize = 22;
         } else {
-          // Tablet besar
           crossAxisCount = 4;
           childAspectRatio = 1.7;
           fontSize = 14;
@@ -372,7 +515,15 @@ class _Svc {
   final String label, sub;
   final Color color;
   final int nav;
-  const _Svc(this.icon, this.label, this.sub, this.color, this.nav);
+  final VoidCallback? onTapOverride;
+  const _Svc(
+    this.icon,
+    this.label,
+    this.sub,
+    this.color,
+    this.nav,
+    this.onTapOverride,
+  );
 }
 
 class _Inc {
@@ -414,7 +565,9 @@ class _ServiceTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (svc.nav > 0) {
+        if (svc.onTapOverride != null) {
+          svc.onTapOverride!();
+        } else if (svc.nav > 0) {
           context.findAncestorStateOfType<AppShellState>()?.goTo(svc.nav);
         }
       },
